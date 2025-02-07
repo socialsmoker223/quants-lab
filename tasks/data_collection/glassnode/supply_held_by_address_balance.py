@@ -3,7 +3,7 @@ import logging
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
-
+import os
 import pandas as pd
 import requests
 from dotenv import load_dotenv
@@ -149,11 +149,11 @@ if __name__ == "__main__":
         "trading_pairs": ["BTC","ETH","SOL"],
         "eth_network":["eth","arb","aggregated"],
         "timescale_config": {
-            "host": "localhost",
-            "port": 5434,
+            "host": os.getenv("TIMESCALE_HOST", "localhost"),
+            "port": os.getenv("TIMESCALE_PORT", 5432),
             "user": "postgres",
-            "password": "P@ssw0rd12",
-            "database": "timescaledb"
+            "password": os.getenv("TIMESCALE_PASSWORD", "admin"),
+            "database": os.getenv("TIMESCALE_DB", "timescaledb"),
         }
     }
     

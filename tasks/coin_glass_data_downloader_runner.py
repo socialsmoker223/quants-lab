@@ -35,9 +35,10 @@ async def main():
     from tasks.data_collection.exchange_volume_downloader_task import ExchangeVolumeDownloaderTask, config as exchange_volume_config
     from tasks.data_collection.funding_rate_downloader_task import FundingRateDownloaderTask, config as funding_rate_config
     from tasks.data_collection.glassnode.accumulation_balance_task import AccumulationBalance, config as accumulation_balance_config
-    from tasks.data_collection.glassnode.address_balance import SupplyHeldByAddressBalance, config as address_balance_config
+    from tasks.data_collection.glassnode.address_balance import AddressBalance, config as address_balance_config
     from tasks.data_collection.glassnode.market_cap import MarketCap, config as market_cap_config
     from tasks.data_collection.glassnode.market_price import MarketPrice
+    from tasks.data_collection.glassnode.supply_held_by_address_balance import SupplyHeldByAddressBalance
 
 
     orchestrator = TaskOrchestrator()
@@ -291,7 +292,7 @@ async def main():
                 "database": os.getenv("TIMESCALE_DB", "timescaledb"),
             }
         }),
-        SupplyHeldByAddressBalance("Address Balance", timedelta(hours=1), {
+        AddressBalance("Address Balance", timedelta(hours=1), {
             "connector_name": "Bybit_perpetual",
             "days_data_retention": 30,                
             "glassnode_api_key": os.getenv("GN_API_KEY"),
@@ -328,6 +329,20 @@ async def main():
                     "user": "postgres",
                     "password": os.getenv("TIMESCALE_PASSWORD", "admin"),
                     "database": os.getenv("TIMESCALE_DB", "timescaledb"),
+            }
+        }),
+        SupplyHeldByAddressBalance("Market Price",timedelta(hours=1), {
+            "days_data_retention": 30,
+            "glassnode_api_key": os.getenv("GN_API_KEY"),
+            "amount_balance":["less_0001","more_100k","0001_001","001_01","01_1","1_10","10_100","100_1k","10k_100k","1k_10k"],
+            "trading_pairs": ["BTC","ETH","SOL"],
+            "eth_network":["eth","arb","aggregated"],
+            "timescale_config": {
+                "host": os.getenv("TIMESCALE_HOST", "localhost"),
+                "port": os.getenv("TIMESCALE_PORT", 5432),
+                "user": "postgres",
+                "password": os.getenv("TIMESCALE_PASSWORD", "admin"),
+                "database": os.getenv("TIMESCALE_DB", "timescaledb"),
             }
         }),
     ]

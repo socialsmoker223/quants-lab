@@ -15,7 +15,7 @@ from core.task_base import BaseTask
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
-class SupplyHeldByAddressBalance (BaseTask):
+class AddressBalance (BaseTask):
     def __init__(self, name: str, frequency: timedelta, config: Dict[str, Any]):
         super().__init__(name, frequency, config)
         
@@ -104,15 +104,15 @@ if __name__ == "__main__":
         "amount_balance":["1_usd_count","10_usd_count","100_usd_count","100k_usd_count","10k_usd_count","1k_usd_count","1m_usd_count"],
         "trading_pairs": ["BTC","ETH"],
         "timescale_config": {
-            "host": os.getenv("TIMESCALE_HOST", "localhost"),
-            "port": os.getenv("TIMESCALE_PORT", 5432),
-            "user": "postgres",
-            "password": os.getenv("TIMESCALE_PASSWORD", "admin"),
-            "database": os.getenv("TIMESCALE_DB", "timescaledb"),
+                "host": os.getenv("TIMESCALE_HOST", "localhost"),
+                "port": os.getenv("TIMESCALE_PORT", 5432),
+                "user": "postgres",
+                "password": os.getenv("TIMESCALE_PASSWORD", "admin"),
+                "database": os.getenv("TIMESCALE_DB", "timescaledb"),
         }
     }
     
-    task = SupplyHeldByAddressBalance(
+    task = AddressBalance(
         "Address Balance",
         timedelta(hours=1),
         config
