@@ -331,7 +331,7 @@ async def main():
                     "database": os.getenv("TIMESCALE_DB", "timescaledb"),
             }
         }),
-        SupplyHeldByAddressBalance("Market Price",timedelta(hours=1), {
+        SupplyHeldByAddressBalance("SupplyHeldByAddressBalance",timedelta(hours=1), {
             "days_data_retention": 30,
             "glassnode_api_key": os.getenv("GN_API_KEY"),
             "amount_balance":["less_0001","more_100k","0001_001","001_01","01_1","1_10","10_100","100_1k","10k_100k","1k_10k"],
