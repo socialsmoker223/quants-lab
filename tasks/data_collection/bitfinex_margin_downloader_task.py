@@ -3,7 +3,7 @@ import logging
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
-
+import os
 import pandas as pd
 import requests
 from dotenv import load_dotenv
@@ -100,15 +100,15 @@ class BitfinexMarginDownloaderTask(BaseTask):
 if __name__ == "__main__":
     config = {
         "connector_name": "Bybit",
-        "days_data_retention": 30,
-        "coinglass_api_key": "579e0b5e25eb46339ca299d5d9ed891e",
+        "days_data_retention": 30,        
         "trading_pairs": ["BTC", "ETH","SOL"],
+        "coinglass_api_key": os.getenv("CG_API_KEY"),
         "timescale_config": {
-            "host": "localhost",
-            "port": 5434,
+            "host": os.getenv("TIMESCALE_HOST", "localhost"),
+            "port": os.getenv("TIMESCALE_PORT", 5432),
             "user": "postgres",
-            "password": "P@ssw0rd12",
-            "database": "timescaledb"
+            "password": os.getenv("TIMESCALE_PASSWORD", "admin"),
+            "database": os.getenv("TIMESCALE_DB", "timescaledb"),
         }
     }
     
