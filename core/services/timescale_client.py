@@ -1979,3 +1979,27 @@ class TimescaleClient:
                 ) VALUES ($1, $2, $3, $4 ,$5,$6)
             ''', kwargs["provider"],  kwargs["value"],kwargs["symbol"],  kwargs["date_time"],
                 kwargs["timestamp"], kwargs["created_at"])                                          
+    async def create_futures_funding_rate_perpetual_1h(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    value  DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_futures_funding_rate_perpetual_1h(self, table_name: str, **kwargs):
+        await self.create_futures_funding_rate_perpetual_1h(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, value,symbol,
+                    date_time,timestamp, created_at
+                ) VALUES ($1, $2, $3, $4 ,$5,$6)
+            ''', kwargs["provider"],  kwargs["value"],kwargs["symbol"],  kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])            
