@@ -39,6 +39,7 @@ async def main():
     from tasks.data_collection.glassnode.market_cap import MarketCap, config as market_cap_config
     from tasks.data_collection.glassnode.market_price import MarketPrice
     from tasks.data_collection.glassnode.supply_held_by_address_balance import SupplyHeldByAddressBalance
+    from tasks.data_collection.glassnode.futures_funding_rate_perpetual import FuturesFundingRatePerpetual
 
 
     orchestrator = TaskOrchestrator()
@@ -345,6 +346,18 @@ async def main():
                 "database": os.getenv("TIMESCALE_DB", "timescaledb"),
             }
         }),
+        FuturesFundingRatePerpetual("FuturesFundingRatePerpetual",timedelta(hours=1),{
+            "days_data_retention": 30,
+            "coinglass_api_key": os.getenv("GN_API_KEY"),
+            "trading_pairs": ["BTC","ETH","PEPE","SOL"],
+            "timescale_config": {
+                    "host": os.getenv("TIMESCALE_HOST", "localhost"),
+                    "port": os.getenv("TIMESCALE_PORT", 5432),
+                    "user": "postgres",
+                    "password": os.getenv("TIMESCALE_PASSWORD", "admin"),
+                    "database": os.getenv("TIMESCALE_DB", "timescaledb"),
+                }
+        })
     ]
     for task in tasks:
         orchestrator.add_task(task)
