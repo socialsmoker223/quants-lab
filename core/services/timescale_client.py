@@ -243,6 +243,1225 @@ class TimescaleClient:
             ''')
             return result.timestamp() if result else None
 
+    # Methods for Coinglass data types
+    async def create_liquidation_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    long_liquidation_usd DOUBLE PRECISION,
+                    short_liquidation_usd DOUBLE PRECISION,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def create_liquidation_aggregated_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    long_liquidation_usd DOUBLE PRECISION,
+                    short_liquidation_usd DOUBLE PRECISION,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def create_global_account_ratio_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def create_top_account_ratio_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    long_account DOUBLE PRECISION,
+                    short_account DOUBLE PRECISION,
+                    long_short_ratio DOUBLE PRECISION
+                )
+            ''')
+
+    async def create_top_position_ratio_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    long_account DOUBLE PRECISION,
+                    short_account DOUBLE PRECISION,
+                    long_short_ratio DOUBLE PRECISION
+                )
+            ''')
+
+    async def create_aggregated_taker_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    long_short_ratio DOUBLE PRECISION
+                )
+            ''')
+
+    async def create_aggregated_taker_volume_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    buy DOUBLE PRECISION,
+                    sell DOUBLE PRECISION
+                )
+            ''')
+
+    async def create_aggregated_orderbook_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    bids_usd DOUBLE PRECISION,
+                    bids_amount DOUBLE PRECISION,
+                    asks_usd DOUBLE PRECISION,
+                    asks_amount DOUBLE PRECISION
+                )
+            ''')
+
+    async def create_bitfinex_margin_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    long_qty DOUBLE PRECISION,
+                    short_qty DOUBLE PRECISION
+                )
+            ''')
+
+    async def create_etf_net_assets_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    net_assets DOUBLE PRECISION,
+                    
+                    price DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def create_etf_flow_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    change_usd DOUBLE PRECISION,
+                    close_price DOUBLE PRECISION,
+                    price DOUBLE PRECISION,
+                    list_ticker TEXT NOT NULL,
+                    list_change_usd DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def create_etf_premium_discount_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    nav DOUBLE PRECISION,
+                    market_price DOUBLE PRECISION,
+                    premium_discount_percent DOUBLE PRECISION,
+                    ticker TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def create_option_info_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    exchange_name TEXT NOT NULL,
+                    open_interest DOUBLE PRECISION,
+                    rate DOUBLE PRECISION,
+                    h24_change DOUBLE PRECISION,
+                    exchange_logo TEXT,
+                    open_interest_usd DOUBLE PRECISION,
+                    vol_usd DOUBLE PRECISION,
+                    h24_vol_change_percent DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    # Insert methods for each table type
+    async def insert_liquidation(self, table_name: str, **kwargs):
+        await self.create_liquidation_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, long_liquidation_usd,
+                    short_liquidation_usd, timeframe, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["long_liquidation_usd"],
+                kwargs["short_liquidation_usd"], kwargs["timeframe"],
+                kwargs["date_time"], kwargs["created_at"])
+
+    async def insert_liquidation_aggregated(self, table_name: str, **kwargs):
+        await self.create_liquidation_aggregated_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, long_liquidation_usd,
+                    short_liquidation_usd, timeframe, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["long_liquidation_usd"],
+                kwargs["short_liquidation_usd"], kwargs["timeframe"],
+                kwargs["date_time"], kwargs["created_at"])
+
+    async def insert_global_account_ratio(self, table_name: str, **kwargs):
+        await self.create_global_account_ratio_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, timeframe,
+                    date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["timeframe"],
+                kwargs["date_time"], kwargs["created_at"])
+
+    async def insert_top_account_ratio(self, table_name: str, **kwargs):
+        await self.create_top_account_ratio_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, timeframe,
+                    date_time, created_at, long_account, short_account,
+                    long_short_ratio
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["timeframe"], kwargs["date_time"],
+                kwargs["created_at"], kwargs["long_account"], kwargs["short_account"],
+                kwargs["long_short_ratio"])
+
+    async def insert_top_position_ratio(self, table_name: str, **kwargs):
+        await self.create_top_position_ratio_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, timeframe,
+                    date_time, created_at, long_account, short_account,
+                    long_short_ratio
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["timeframe"], kwargs["date_time"],
+                kwargs["created_at"], kwargs["long_account"], kwargs["short_account"],
+                kwargs["long_short_ratio"])
+
+    async def insert_aggregated_taker(self, table_name: str, **kwargs):
+        await self.create_aggregated_taker_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, timeframe,
+                    date_time, created_at, long_short_ratio
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["timeframe"], kwargs["date_time"],
+                kwargs["created_at"], kwargs["long_short_ratio"])
+
+    async def insert_aggregated_taker_volume(self, table_name: str, **kwargs):
+        await self.create_aggregated_taker_volume_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, timeframe,
+                    date_time, created_at, buy, sell
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["timeframe"], kwargs["date_time"],
+                kwargs["created_at"], kwargs["buy"], kwargs["sell"])
+
+    async def insert_aggregated_orderbook(self, table_name: str, **kwargs):
+        await self.create_aggregated_orderbook_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, timeframe,
+                    date_time, created_at, bids_usd, bids_amount,
+                    asks_usd, asks_amount
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["timeframe"], kwargs["date_time"],
+                kwargs["created_at"], kwargs["bids_usd"], kwargs["bids_amount"],
+                kwargs["asks_usd"], kwargs["asks_amount"])
+
+    async def insert_bitfinex_margin(self, table_name: str, **kwargs):
+        await self.create_bitfinex_margin_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, timeframe,
+                    date_time, created_at, long_qty, short_qty
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["timeframe"], kwargs["date_time"],
+                kwargs["created_at"], kwargs["long_qty"], kwargs["short_qty"])
+
+    async def insert_etf_net_assets(self, table_name: str, **kwargs):
+        await self.create_etf_net_assets_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, net_assets, price, date_time,
+                    timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6)
+            ''', kwargs["provider"], kwargs["net_assets"],
+                kwargs["price"], kwargs["date_time"], kwargs["timestamp"],
+                kwargs["created_at"])
+
+    async def insert_etf_flow(self, table_name: str, **kwargs):
+        await self.create_etf_flow_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, change_usd, close_price, price, list_ticker,list_change_usd,
+                    date_time, timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9)
+            ''', kwargs["provider"], kwargs["change_usd"], kwargs["close_price"],
+                kwargs["price"], kwargs["list_ticker"], kwargs["list_change_usd"], kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])
+
+    async def insert_etf_premium_discount(self, table_name: str, **kwargs):
+        await self.create_etf_premium_discount_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, nav, market_price, premium_discount_percent,
+                    ticker, date_time, timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ''', kwargs["provider"], kwargs["nav"], kwargs["market_price"],
+                kwargs["premium_discount_percent"], kwargs["ticker"],
+                kwargs["date_time"], kwargs["timestamp"], kwargs["created_at"])
+
+    async def create_ahr999_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    avg DOUBLE PRECISION,
+                    value TEXT NOT NULL,
+                    ahr999 DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_ahr999(self, table_name: str, **kwargs):
+        await self.create_ahr999_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, avg, value, ahr999, date_time, timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+            ''', kwargs["provider"], kwargs["avg"], kwargs["value"],
+                kwargs["ahr999"], kwargs["date_time"], kwargs["timestamp"],
+                kwargs["created_at"])
+
+    async def create_bitcoin_bubble_index_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    index DOUBLE PRECISION,
+                    google_trend DOUBLE PRECISION,
+                    difficulty DOUBLE PRECISION,
+                    transactions DOUBLE PRECISION,
+                    sent_by_address DOUBLE PRECISION,
+                    tweets DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_bitcoin_bubble_index(self, table_name: str, **kwargs):
+        await self.create_bitcoin_bubble_index_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, price, index, google_trend, difficulty,
+                    transactions, sent_by_address, tweets, date_time,
+                    timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ''', kwargs["provider"], kwargs["price"], kwargs["index"],
+                kwargs["google_trend"], kwargs["difficulty"], kwargs["transactions"],
+                kwargs["sent_by_address"], kwargs["tweets"], kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])
+
+    async def create_bitcoin_profitable_days_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    side DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_bitcoin_profitable_days(self, table_name: str, **kwargs):
+        await self.create_bitcoin_profitable_days_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, price, side, date_time,
+                    timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6)
+            ''', kwargs["provider"], kwargs["price"], kwargs["side"],
+                kwargs["date_time"], kwargs["timestamp"],
+                kwargs["created_at"])
+
+    async def create_bitcoin_rainbow_chart_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    btc_price DOUBLE PRECISION,
+                    model_price DOUBLE PRECISION,
+                    fire_sale DOUBLE PRECISION,
+                    buy DOUBLE PRECISION,
+                    accumulate DOUBLE PRECISION,
+                    still_cheap DOUBLE PRECISION,
+                    hold DOUBLE PRECISION,
+                    is_this_a_bubble DOUBLE PRECISION,
+                    fomo_intensifies DOUBLE PRECISION,
+                    sell_seriously_sell DOUBLE PRECISION,
+                    maximum_bubble_territory DOUBLE PRECISION,                    
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_bitcoin_rainbow_chart(self, table_name: str, **kwargs):
+        await self.create_bitcoin_rainbow_chart_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, btc_price, model_price, fire_sale, buy,
+                    accumulate, still_cheap, hold, is_this_a_bubble,
+                    fomo_intensifies, sell_seriously_sell,
+                    maximum_bubble_territory,
+                    date_time, timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+            ''', kwargs["provider"], kwargs["btc_price"], kwargs["model_price"],
+                kwargs["fire_sale"], kwargs["buy"], kwargs["accumulate"],
+                kwargs["still_cheap"], kwargs["hold"], kwargs["is_this_a_bubble"],
+                kwargs["fomo_intensifies"], kwargs["sell_seriously_sell"],
+                kwargs["maximum_bubble_territory"], 
+                kwargs["date_time"], kwargs["timestamp"],
+                kwargs["created_at"])
+
+    async def create_coinbase_premium_index_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    premium DOUBLE PRECISION,
+                    premiumRate DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_coinbase_premium_index(self, table_name: str, **kwargs):
+        await self.create_coinbase_premium_index_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, timestamp, premium,premiumRate, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5,$6)
+            ''', kwargs["provider"], kwargs["timestamp"], kwargs["premium"],kwargs["premiumRate"],
+                kwargs["date_time"], kwargs["created_at"])
+
+    async def create_coins_markets_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    marketCap DOUBLE PRECISION, 
+                    oiMarketCapRatio DOUBLE PRECISION,
+                    avgFundingRateByOi DOUBLE PRECISION,
+                    avgFundingRateByVol DOUBLE PRECISION, 
+                    open_interest DOUBLE PRECISION,
+                    openInterestAmount DOUBLE PRECISION,
+                    oiVolRatio DOUBLE PRECISION,
+                    volUsd DOUBLE PRECISION,
+                    volChangePercent5m DOUBLE PRECISION, 
+                    volChangePercent15m DOUBLE PRECISION,
+                    volChangePercent30m DOUBLE PRECISION,
+                    volChangePercent1h DOUBLE PRECISION,
+                    volChangePercent4h DOUBLE PRECISION,
+                    volChangePercent24h DOUBLE PRECISION,
+                    volChange1h DOUBLE PRECISION,
+                    volChange4h DOUBLE PRECISION,
+                    volChange24h DOUBLE PRECISION,
+                    oiVolRatioChangePercent1h DOUBLE PRECISION,
+                    oiVolRatioChangePercent4h DOUBLE PRECISION,
+                    oiVolRatioChangePercent24h DOUBLE PRECISION,
+                    oiChangePercent30m DOUBLE PRECISION,
+                    oiChangePercent15m DOUBLE PRECISION,
+                    oiChangePercent5m DOUBLE PRECISION,
+                    oiChangePercent24h DOUBLE PRECISION,
+                    oiChangePercent1h DOUBLE PRECISION,
+                    oiChangePercent4h DOUBLE PRECISION,
+                    oiChange24h DOUBLE PRECISION,
+                    oiChange1h DOUBLE PRECISION,
+                    oiChange4h DOUBLE PRECISION,
+                    oiChange30m DOUBLE PRECISION,
+                    oiChange15m DOUBLE PRECISION,
+                    oiChange5m DOUBLE PRECISION,
+                    priceChangePercent5m DOUBLE PRECISION,
+                    priceChangePercent15m DOUBLE PRECISION,
+                    priceChangePercent30m DOUBLE PRECISION,
+                    priceChangePercent1h DOUBLE PRECISION,
+                    priceChangePercent4h DOUBLE PRECISION,
+                    priceChangePercent12h DOUBLE PRECISION,
+                    priceChangePercent24h DOUBLE PRECISION,
+                    ls5m DOUBLE PRECISION,
+                    longVolUsd5m DOUBLE PRECISION,
+                    shortVolUsd5m DOUBLE PRECISION,
+                    ls15m DOUBLE PRECISION,
+                    longVolUsd15m DOUBLE PRECISION,
+                    shortVolUsd15m DOUBLE PRECISION,
+                    ls30m DOUBLE PRECISION,
+                    longVolUsd30m DOUBLE PRECISION,
+                    shortVolUsd30m DOUBLE PRECISION,
+                    ls1h DOUBLE PRECISION,
+                    longVolUsd1h DOUBLE PRECISION,
+                    shortVolUsd1h DOUBLE PRECISION,
+                    ls4h DOUBLE PRECISION,
+                    longVolUsd4h DOUBLE PRECISION,
+                    shortVolUsd4h DOUBLE PRECISION,
+                    ls12h DOUBLE PRECISION,
+                    longVolUsd12h DOUBLE PRECISION,
+                    shortVolUsd12h DOUBLE PRECISION,
+                    ls24h DOUBLE PRECISION,
+                    longVolUsd24h DOUBLE PRECISION,
+                    shortVolUsd24h DOUBLE PRECISION,
+                    liquidationUsd24h DOUBLE PRECISION,
+                    longLiquidationUsd24h DOUBLE PRECISION,
+                    shortLiquidationUsd24h DOUBLE PRECISION,
+                    liquidationUsd12h DOUBLE PRECISION,
+                    longLiquidationUsd12h DOUBLE PRECISION,
+                    shortLiquidationUsd12h DOUBLE PRECISION,
+                    liquidationUsd4h DOUBLE PRECISION,
+                    longLiquidationUsd4h DOUBLE PRECISION,
+                    shortLiquidationUsd4h DOUBLE PRECISION,
+                    liquidationUsd1h DOUBLE PRECISION,
+                    longLiquidationUsd1h DOUBLE PRECISION,
+                    shortLiquidationUsd1h DOUBLE PRECISION,
+                    created_date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_coins_markets(self, table_name: str, **kwargs):
+        await self.create_coins_markets_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    exchange, provider, symbol, price, marketCap, oiMarketCapRatio,
+                    avgFundingRateByOi, avgFundingRateByVol, open_interest, openInterestAmount,
+                    oiVolRatio, volUsd, volChangePercent5m, volChangePercent15m,
+                    volChangePercent30m, volChangePercent1h, volChangePercent4h,
+                    volChangePercent24h, volChange1h, volChange4h, volChange24h,
+                    oiVolRatioChangePercent1h, oiVolRatioChangePercent4h,
+                    oiVolRatioChangePercent24h, oiChangePercent30m, oiChangePercent15m,
+                    oiChangePercent5m, oiChangePercent24h, oiChangePercent1h,
+                    oiChangePercent4h, oiChange24h, oiChange1h, oiChange4h,
+                    oiChange30m, oiChange15m, oiChange5m, priceChangePercent5m,
+                    priceChangePercent15m, priceChangePercent30m, priceChangePercent1h,
+                    priceChangePercent4h, priceChangePercent12h, priceChangePercent24h,
+                    ls5m, longVolUsd5m, shortVolUsd5m, ls15m, longVolUsd15m,
+                    shortVolUsd15m, ls30m, longVolUsd30m, shortVolUsd30m,
+                    ls1h, longVolUsd1h, shortVolUsd1h, ls4h, longVolUsd4h,
+                    shortVolUsd4h, ls12h, longVolUsd12h, shortVolUsd12h,
+                    ls24h, longVolUsd24h, shortVolUsd24h, liquidationUsd24h,
+                    longLiquidationUsd24h, shortLiquidationUsd24h, liquidationUsd12h,
+                    longLiquidationUsd12h, shortLiquidationUsd12h, liquidationUsd4h,
+                    longLiquidationUsd4h, shortLiquidationUsd4h, liquidationUsd1h,
+                    longLiquidationUsd1h, shortLiquidationUsd1h, created_date_time,
+                    created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                          $11, $12, $13, $14, $15, $16, $17, $18,
+                          $19, $20, $21, $22, $23, $24, $25, $26,
+                          $27, $28, $29, $30, $31, $32, $33, $34,
+                          $35, $36, $37, $38, $39, $40, $41, $42,
+                          $43, $44, $45, $46, $47, $48, $49, $50,
+                          $51, $52, $53, $54, $55, $56, $57, $58,
+                          $59, $60, $61, $62, $63, $64, $65, $66,
+                          $67, $68, $69, $70, $71, $72, $73, $74,
+                          $75, $76, $77, $78)
+            ''', kwargs["exchange"], kwargs["provider"], kwargs["symbol"],
+                kwargs["price"], kwargs["marketCap"], kwargs["oiMarketCapRatio"],
+                kwargs["avgFundingRateByOi"], kwargs["avgFundingRateByVol"],
+                kwargs["open_interest"], kwargs["openInterestAmount"], kwargs["oiVolRatio"],
+                kwargs["volUsd"], kwargs["volChangePercent5m"], kwargs["volChangePercent15m"],
+                kwargs["volChangePercent30m"], kwargs["volChangePercent1h"],
+                kwargs["volChangePercent4h"], kwargs["volChangePercent24h"],
+                kwargs["volChange1h"], kwargs["volChange4h"], kwargs["volChange24h"],
+                kwargs["oiVolRatioChangePercent1h"], kwargs["oiVolRatioChangePercent4h"],
+                kwargs["oiVolRatioChangePercent24h"], kwargs["oiChangePercent30m"],
+                kwargs["oiChangePercent15m"], kwargs["oiChangePercent5m"],
+                kwargs["oiChangePercent24h"], kwargs["oiChangePercent1h"],
+                kwargs["oiChangePercent4h"], kwargs["oiChange24h"], kwargs["oiChange1h"],
+                kwargs["oiChange4h"], kwargs["oiChange30m"], kwargs["oiChange15m"],
+                kwargs["oiChange5m"], kwargs["priceChangePercent5m"],
+                kwargs["priceChangePercent15m"], kwargs["priceChangePercent30m"],
+                kwargs["priceChangePercent1h"], kwargs["priceChangePercent4h"],
+                kwargs["priceChangePercent12h"], kwargs["priceChangePercent24h"],
+                kwargs["ls5m"], kwargs["longVolUsd5m"], kwargs["shortVolUsd5m"],
+                kwargs["ls15m"], kwargs["longVolUsd15m"], kwargs["shortVolUsd15m"],
+                kwargs["ls30m"], kwargs["longVolUsd30m"], kwargs["shortVolUsd30m"],
+                kwargs["ls1h"], kwargs["longVolUsd1h"], kwargs["shortVolUsd1h"],
+                kwargs["ls4h"], kwargs["longVolUsd4h"], kwargs["shortVolUsd4h"],
+                kwargs["ls12h"], kwargs["longVolUsd12h"], kwargs["shortVolUsd12h"],
+                kwargs["ls24h"], kwargs["longVolUsd24h"], kwargs["shortVolUsd24h"],
+                kwargs["liquidationUsd24h"], kwargs["longLiquidationUsd24h"],
+                kwargs["shortLiquidationUsd24h"], 
+                kwargs["liquidationUsd12h"], kwargs["longLiquidationUsd12h"],
+                kwargs["shortLiquidationUsd12h"], kwargs["liquidationUsd4h"],
+                kwargs["longLiquidationUsd4h"], kwargs["shortLiquidationUsd4h"],
+                kwargs["liquidationUsd1h"], kwargs["longLiquidationUsd1h"],
+                kwargs["shortLiquidationUsd1h"], kwargs["created_date_time"],
+                kwargs["created_at"])
+
+    async def create_crypto_fear_greed_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    value DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_crypto_fear_greed(self, table_name: str, **kwargs):
+        await self.create_crypto_fear_greed_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, price, value, date_time,
+                    timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6)
+            ''', kwargs["provider"], kwargs["price"], kwargs["value"],
+                kwargs["date_time"], kwargs["timestamp"],
+                kwargs["created_at"])
+
+    async def create_golden_ratio_multiplier_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    ma350 TEXT NOT NULL,
+                    two_low_bull_high TEXT NOT NULL,
+                    three_low_bull_high TEXT NULL,
+                    x8 TEXT NULL,
+                    accumulation_high TEXT NOT NULL,
+                    x21 TEXT NULL,
+                    x13 TEXT NULL,
+                    x3 TEXT NULL,
+                    x5 TEXT NULL,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_golden_ratio_multiplier(self, table_name: str, **kwargs):
+        await self.create_golden_ratio_multiplier_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, price, ma350, two_low_bull_high,three_low_bull_high,
+                    x8, accumulation_high, x21, x13, x3, x5,
+                    date_time,timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            ''', kwargs["provider"], kwargs["price"], kwargs["ma350"],
+                kwargs["two_low_bull_high"],kwargs["three_low_bull_high"],   kwargs["x8"],
+                kwargs["accumulation_high"], kwargs["x21"], kwargs["x13"],
+                kwargs["x3"], kwargs["x5"], kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])
+
+    async def create_pi_cycle_top_indicator_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    ma110 DOUBLE PRECISION,
+                    ma350_mu2 DOUBLE PRECISION,
+                    provider_date_time TEXT NOT NULL,
+                    provider_timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_pi_cycle_top_indicator(self, table_name: str, **kwargs):
+        await self.create_pi_cycle_top_indicator_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, price, ma110, ma350_mu2,
+                    provider_date_time, provider_timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+            ''', kwargs["provider"], kwargs["price"], kwargs["ma110"],
+                kwargs["ma350_mu2"], kwargs["provider_date_time"],
+                kwargs["provider_timestamp"], kwargs["created_at"])
+
+    async def create_puell_multiple_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    buy_qty DOUBLE PRECISION,
+                    price DOUBLE PRECISION,
+                    puell_multiple DOUBLE PRECISION,
+                    sell_qty DOUBLE PRECISION,
+                    provider_date_time TEXT NOT NULL,
+                    provider_timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_puell_multiple(self, table_name: str, **kwargs):
+        await self.create_puell_multiple_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, buy_qty, price, puell_multiple, sell_qty,
+                    provider_date_time, provider_timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ''', kwargs["provider"], kwargs["buy_qty"], kwargs["price"],
+                kwargs["puell_multiple"], kwargs["sell_qty"],
+                kwargs["provider_date_time"], kwargs["provider_timestamp"],
+                kwargs["created_at"])
+
+    async def create_stablecoin_market_cap_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    market_cap DOUBLE PRECISION,
+                    btc_price DOUBLE PRECISION,
+                    provider_date_time TEXT NOT NULL,
+                    provider_timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_stablecoin_market_cap(self, table_name: str, **kwargs):
+        await self.create_stablecoin_market_cap_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, market_cap, btc_price, provider_date_time,
+                    provider_timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6)
+            ''', kwargs["provider"], kwargs["market_cap"], kwargs["btc_price"],
+                kwargs["provider_date_time"], kwargs["provider_timestamp"],
+                kwargs["created_at"])
+
+    async def create_stock_to_flow_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    next_halving DOUBLE PRECISION,
+                    provider_date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_stock_to_flow(self, table_name: str, **kwargs):
+        await self.create_stock_to_flow_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, price, next_halving, provider_date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5)
+            ''', kwargs["provider"], kwargs["price"], kwargs["next_halving"],
+                kwargs["provider_date_time"], kwargs["created_at"])
+
+    async def create_two_hundred_week_ma_heatmap_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    buy_qty DOUBLE PRECISION,
+                    price DOUBLE PRECISION,
+                    ma1440 DOUBLE PRECISION,
+                    ma1440ip DOUBLE PRECISION,
+                    sell_qty DOUBLE PRECISION,
+                    provider_date_time TEXT NOT NULL,
+                    provider_timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_two_hundred_week_ma_heatmap(self, table_name: str, **kwargs):
+        await self.create_two_hundred_week_ma_heatmap_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, buy_qty, price, ma1440, ma1440ip, sell_qty,
+                    provider_date_time, provider_timestamp, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["provider"], kwargs["buy_qty"], kwargs["price"],
+                kwargs["ma1440"], kwargs["ma1440ip"], kwargs["sell_qty"],
+                kwargs["provider_date_time"], kwargs["provider_timestamp"],
+                kwargs["created_at"])
+
+    async def create_two_year_ma_multiplier_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    buy_qty DOUBLE PRECISION,
+                    price DOUBLE PRECISION,
+                    ma730_mu5 DOUBLE PRECISION,
+                    ma730 DOUBLE PRECISION,
+                    sell_qty DOUBLE PRECISION,
+                    provider_date_time TEXT NOT NULL,
+                    provider_timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def create_liquidation_aggregated_heatmap_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    long_volume DOUBLE PRECISION,
+                    short_volume DOUBLE PRECISION,
+                    timestamp BIGINT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_liquidation_aggregated_heatmap(self, table_name: str, **kwargs):
+        await self.create_liquidation_aggregated_heatmap_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, price, long_volume,
+                    short_volume, timestamp, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["price"], kwargs["long_volume"], kwargs["short_volume"],
+                kwargs["timestamp"], kwargs["date_time"], kwargs["created_at"])
+
+    async def create_liquidation_aggregated_heatmap_model2_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    long_volume DOUBLE PRECISION,
+                    short_volume DOUBLE PRECISION,
+                    timestamp BIGINT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_liquidation_aggregated_heatmap_model2(self, table_name: str, **kwargs):
+        await self.create_liquidation_aggregated_heatmap_model2_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, provider, price, long_volume, short_volume,
+                    timestamp, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ''', kwargs["symbol"], kwargs["provider"], kwargs["price"],
+                kwargs["long_volume"], kwargs["short_volume"], kwargs["timestamp"],
+                kwargs["date_time"], kwargs["created_at"])
+
+    async def create_liquidation_heatmap_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    long_volume DOUBLE PRECISION,
+                    short_volume DOUBLE PRECISION,
+                    timestamp BIGINT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_liquidation_heatmap(self, table_name: str, **kwargs):
+        await self.create_liquidation_heatmap_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, price, long_volume,
+                    short_volume, timestamp, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["price"], kwargs["long_volume"], kwargs["short_volume"],
+                kwargs["timestamp"], kwargs["date_time"], kwargs["created_at"])
+
+    async def create_liquidation_heatmap_model2_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    long_volume DOUBLE PRECISION,
+                    short_volume DOUBLE PRECISION,
+                    timestamp BIGINT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_liquidation_heatmap_model2(self, table_name: str, **kwargs):
+        await self.create_liquidation_heatmap_model2_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, price, long_volume,
+                    short_volume, timestamp, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["price"], kwargs["long_volume"], kwargs["short_volume"],
+                kwargs["timestamp"], kwargs["date_time"], kwargs["created_at"])
+
+    async def create_liquidation_map_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    price DOUBLE PRECISION,
+                    long_volume DOUBLE PRECISION,
+                    short_volume DOUBLE PRECISION,
+                    timestamp BIGINT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_liquidation_map(self, table_name: str, **kwargs):
+        await self.create_liquidation_map_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, price, long_volume,
+                    short_volume, timestamp, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["price"], kwargs["long_volume"], kwargs["short_volume"],
+                kwargs["timestamp"], kwargs["date_time"], kwargs["created_at"])
+
+    async def create_liquidation_exchange_list_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    long_volume DOUBLE PRECISION,
+                    short_volume DOUBLE PRECISION,
+                    timestamp BIGINT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def create_price_ohlc_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    open DOUBLE PRECISION,
+                    high DOUBLE PRECISION,
+                    low DOUBLE PRECISION,
+                    close DOUBLE PRECISION,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_price_ohlc(self, table_name: str, **kwargs):
+        await self.create_price_ohlc_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, open,
+                    high, low, close, timeframe, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["open"], kwargs["high"],
+                kwargs["low"], kwargs["close"], kwargs["timeframe"],
+                kwargs["date_time"], kwargs["created_at"])
+
+    async def create_oi_weight_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    open DOUBLE PRECISION,
+                    high DOUBLE PRECISION,
+                    low DOUBLE PRECISION,
+                    close DOUBLE PRECISION,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_oi_weight(self, table_name: str, **kwargs):
+        await self.create_oi_weight_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, open,
+                    high, low, close, timeframe, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["open"], kwargs["high"],
+                kwargs["low"], kwargs["close"], kwargs["timeframe"],
+                kwargs["date_time"], kwargs["created_at"])
+
+    async def create_vol_weight_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    open DOUBLE PRECISION,
+                    high DOUBLE PRECISION,
+                    low DOUBLE PRECISION,
+                    close DOUBLE PRECISION,
+                    timeframe TEXT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_vol_weight(self, table_name: str, **kwargs):
+        await self.create_vol_weight_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    symbol, exchange, provider, timestamp, open,
+                    high, low, close, timeframe, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ''', kwargs["symbol"], kwargs["exchange"], kwargs["provider"],
+                kwargs["timestamp"], kwargs["open"], kwargs["high"],
+                kwargs["low"], kwargs["close"], kwargs["timeframe"],
+                kwargs["date_time"], kwargs["created_at"])
+            
+    async def create_exchange_open_interest_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,                   
+                    provider TEXT NOT NULL,                
+                    priceList DOUBLE PRECISION,
+                    Deribit DOUBLE PRECISION,
+                    CME DOUBLE PRECISION,
+                    OKX DOUBLE PRECISION,
+                    Binance DOUBLE PRECISION,
+                    Bybit DOUBLE PRECISION,
+                    timestamp BIGINT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_exchange_open_interest(self, table_name: str, **kwargs):
+        await self.create_exchange_open_interest_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                symbol, provider, priceList, Deribit,CME,OKX,Binance,Bybit, timestamp, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ''', kwargs["symbol"], 
+                kwargs["provider"], kwargs["priceList"], 
+                kwargs["Deribit"], kwargs["CME"], kwargs["OKX"]
+                , kwargs["Binance"],kwargs["Bybit"],kwargs["timestamp"],
+                kwargs["date_time"],kwargs["created_at"])   
+                        
+    async def create_exchange_volume_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                   
+                    provider TEXT NOT NULL,                
+                    priceList DOUBLE PRECISION,
+                    Deribit DOUBLE PRECISION,
+                    CME DOUBLE PRECISION,
+                    OKX DOUBLE PRECISION,
+                    Binance DOUBLE PRECISION,
+                    Bybit DOUBLE PRECISION,
+                    timestamp BIGINT NOT NULL,
+                    date_time TEXT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_exchange_volume(self, table_name: str, **kwargs):
+        await self.create_exchange_volume_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                symbol, provider, priceList, Deribit,CME,OKX,Binance,Bybit, timestamp, date_time, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ''', kwargs["symbol"], 
+                kwargs["provider"], kwargs["priceList"], 
+                kwargs["Deribit"], kwargs["CME"], kwargs["OKX"]
+                , kwargs["Binance"],kwargs["Bybit"],kwargs["timestamp"],
+                kwargs["date_time"],kwargs["created_at"])            
+
     async def close(self):
         if self.pool:
             await self.pool.close()
@@ -591,7 +1810,6 @@ class TimescaleClient:
         Converts a candle interval string to a pandas frequency string.
         """
         return INTERVAL_MAPPING.get(interval, 'T')
-
     async def store_grid_parameters(self, grid_params: Dict):
         """Store grid parameters in the database"""
         query = """
@@ -607,4 +1825,197 @@ class TimescaleClient:
             grid_params["end"],
             grid_params["limit"],
             grid_params["side"]
-        )
+        )    
+
+    async def create_funding_rates_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    symbol TEXT NOT NULL,                   
+                    exchange TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    open DOUBLE PRECISION,
+                    high DOUBLE PRECISION,
+                    low DOUBLE PRECISION,
+                    close DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                );
+            ''')
+
+    async def insert_funding_rates(self, table_name: str,  **kwargs):
+        await self.create_funding_rates_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} 
+                (symbol,exchange,provider,open, high, low, close,date_time, timestamp, created_at)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            ''',kwargs["symbol"],kwargs["exchange"],kwargs["provider"], kwargs["open"],kwargs["high"],kwargs["low"],kwargs["close"],kwargs["date_time"],kwargs["timestamp"],kwargs["created_at"])
+
+    async def delete_funding_rates(self, connector_name: str, trading_pair: str, timestamp: float):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                DELETE FROM funding_rates_{connector_name.lower()}
+                WHERE timestamp < $1
+            ''', datetime.fromtimestamp(timestamp))
+
+    
+
+    async def get_last_timestamp(self, table_name: str) -> Optional[datetime]:
+        query = f"""
+            SELECT MAX(timestamp)
+            FROM {table_name}
+        """
+        result = await self.pool.fetchval(query)
+        return result
+    
+    async def create_accumulation_balance_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    value  DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_accumulation_balance(self, table_name: str, **kwargs):
+        await self.create_accumulation_balance_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, value,symbol,
+                    date_time,timestamp, created_at
+                ) VALUES ($1, $2, $3, $4 ,$5,$6)
+            ''', kwargs["provider"],  kwargs["value"],kwargs["symbol"],  kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])
+
+    async def create_address_supply_balance_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    value  DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_address_supply_balance(self, table_name: str, **kwargs):
+        await self.create_address_supply_balance_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, value,symbol,
+                    date_time,timestamp, created_at
+                ) VALUES ($1, $2, $3, $4 ,$5,$6)
+            ''', kwargs["provider"],  kwargs["value"],kwargs["symbol"],  kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])            
+            
+    async def create_address_balance_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    volume  DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_address_balance(self, table_name: str, **kwargs):
+        await self.create_address_balance_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, volume,symbol,
+                    date_time,timestamp, created_at
+                ) VALUES ($1, $2, $3, $4 ,$5,$6)
+            ''', kwargs["provider"],  kwargs["volume"],kwargs["symbol"],  kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])            
+
+    async def create_market_price_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    value  DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_market_price(self, table_name: str, **kwargs):
+        await self.create_market_price_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, value,symbol,
+                    date_time,timestamp, created_at
+                ) VALUES ($1, $2, $3, $4 ,$5,$6)
+            ''', kwargs["provider"],  kwargs["value"],kwargs["symbol"],  kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])                              
+            
+    async def create_market_cap_table(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    value  DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_market_cap(self, table_name: str, **kwargs):
+        await self.create_market_cap_table(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, value,symbol,
+                    date_time,timestamp, created_at
+                ) VALUES ($1, $2, $3, $4 ,$5,$6)
+            ''', kwargs["provider"],  kwargs["value"],kwargs["symbol"],  kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])                                          
+    async def create_futures_funding_rate_perpetual_1h(self, table_name: str):
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    provider TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    value  DOUBLE PRECISION,
+                    date_time TEXT NOT NULL,
+                    timestamp BIGINT NOT NULL,
+                    created_at BIGINT NOT NULL
+                )
+            ''')
+
+    async def insert_futures_funding_rate_perpetual_1h(self, table_name: str, **kwargs):
+        await self.create_futures_funding_rate_perpetual_1h(table_name)
+        async with self.pool.acquire() as conn:
+            await conn.execute(f'''
+                INSERT INTO {table_name} (
+                    provider, value,symbol,
+                    date_time,timestamp, created_at
+                ) VALUES ($1, $2, $3, $4 ,$5,$6)
+            ''', kwargs["provider"],  kwargs["value"],kwargs["symbol"],  kwargs["date_time"],
+                kwargs["timestamp"], kwargs["created_at"])            
